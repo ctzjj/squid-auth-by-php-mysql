@@ -1,0 +1,44 @@
+#!/usr/bin/env php
+<?php
+
+set_time_limit(0);
+
+$options = [
+    'host' => '127.0.0.1', //数据库地址
+    'port' => 3306, //数据库端口
+    'database' => 'passwd', //数据库密码
+    'user' => 'usr', //数据库用户
+    'password' => 'dbname' //数据库名称
+];
+
+define('CACHE_TTL', 300);
+
+if (extension_loaded('newrelic')) {
+    newrelic_set_appname('squid_auth_mysql');
+}
+
+$pdo = new PDO(sprintf('mysql:host=%s;port=%s;dbname=%s', $options['host'], $options['port'], $options['database']), $options['user'], $options['password']);
+
+while (false !== ($input = fgets(STDIN))) {
+    $input = explode(' ', trim($input));
+
+    if (count($input) !== 2) {
+        echo 'ERR login failure' . PHP_EOL;
+        continue;
+    }
+    list($username, $password) = $input;
+	//更具自己的表结构修改
+    $sth = $pdo->prepare('SELECT username FROM squid WHERE username = :username AND password = :password AND is_enabled = 1');
+    $sth->execute([
+        ':username' => $username,
+        ':password' => $password
+    ]);
+    $result = $sth->fetchAll();
+    
+    if (count($result) > 0) {
+        echo 'OK' . PHP_EOL;
+    } else {
+        echo 'ERR login failure' . PHP_EOL;
+    }
+}
+
