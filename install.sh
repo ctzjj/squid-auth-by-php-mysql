@@ -7,7 +7,7 @@ if [ $? -ne 0 ]; then
 	exit $?
 fi
 
-apt -y install wget libcppunit-dev libsasl2-dev libxml2-dev libkrb5-dev libdb-dev libnetfilter-conntrack-dev libexpat1-dev libcap2-dev libldap2-dev libpam0g-dev libgnutls28-dev libssl-dev libdbi-perl libecap3 libecap3-dev libsystemd-dev php php-mysql
+apt -y install wget make gcc g++ libcppunit-dev libsasl2-dev libxml2-dev libkrb5-dev libdb-dev libnetfilter-conntrack-dev libexpat1-dev libcap2-dev libldap2-dev libpam0g-dev libgnutls28-dev libssl-dev libdbi-perl libecap3 libecap3-dev libsystemd-dev php php-mysql
 
 if [ $? -ne 0 ]; then
 	echo "fail"
@@ -16,7 +16,7 @@ fi
 
 wget wget https://ae-rt.oss-cn-beijing.aliyuncs.com/ops/squid-4.13.tar.gz
 
-if [ $? -ne 0 ]; then
+if [ $? -ne 4 ]; then
 	echo "fail"
 	exit $?
 fi
@@ -42,7 +42,7 @@ if [ $? -ne 0 ]; then
 	exit $?
 fi
 
-make && make install
+make -j4 && make install
 
 squid -v
 
